@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" style="z-index: 100;">
+  <g>
+    <!-- Red diamond shape -->
+    <polygon points="25,5 45,25 25,45 5,25" fill="#E63946" />
+    
+    <!-- Inner diamond shape -->
+    <polygon points="25,10 40,25 25,40 10,25" fill="#1D3557" stroke="#E63946" stroke-width="1" />
+    
+    <!-- Text -->
+    <text x="55" y="25" font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="#1D3557" dominant-baseline="middle">Micro Digits</text>
+    
+    <!-- Tagline -->
+    <text x="55" y="40" font-family="Arial, sans-serif" font-size="8" fill="#4A5568" dominant-baseline="middle">Smart Solutions for a Digital World</text>
+  </g>
+</svg>
