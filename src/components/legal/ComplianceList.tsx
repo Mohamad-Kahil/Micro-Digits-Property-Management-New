@@ -26,6 +26,7 @@ import {
   Clock,
   Plus,
 } from "lucide-react";
+import ComplianceDetailsDialog from "./ComplianceDetailsDialog";
 
 interface ComplianceItem {
   id: string;
@@ -137,6 +138,8 @@ const ComplianceList = ({
   categoryFilter = null,
 }: ComplianceListProps) => {
   const navigate = useNavigate();
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<ComplianceItem | null>(null);
 
   // Filter compliance items based on search query, status, and category
   const filteredItems = mockComplianceItems.filter((item) => {
@@ -245,7 +248,10 @@ const ComplianceList = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
-                        onClick={() => navigate(`/legal/compliance/${item.id}`)}
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setIsDetailsOpen(true);
+                        }}
                       >
                         View Details
                       </DropdownMenuItem>
@@ -290,6 +296,15 @@ const ComplianceList = ({
             View All Compliance Items
           </Button>
         </div>
+      )}
+
+      {/* Compliance Details Dialog */}
+      {selectedItem && (
+        <ComplianceDetailsDialog
+          item={selectedItem}
+          isOpen={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+        />
       )}
     </div>
   );

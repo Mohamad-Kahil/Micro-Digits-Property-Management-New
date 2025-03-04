@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,8 @@ import {
   FileText,
   Scale,
 } from "lucide-react";
+import AddNoteDialog from "./AddNoteDialog";
+import UploadDocumentDialog from "./UploadDocumentDialog";
 
 interface ComplianceItem {
   id: string;
@@ -35,9 +37,15 @@ interface ComplianceItem {
 const ComplianceDetail = () => {
   const { complianceId } = useParams<{ complianceId: string }>();
   const navigate = useNavigate();
+  const [isAddNoteOpen, setIsAddNoteOpen] = useState(false);
+  const [isUploadDocOpen, setIsUploadDocOpen] = useState(false);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<
+    { name: string; url: string; type: string }[]
+  >([]);
 
   // Mock compliance item data - in a real app, you would fetch this based on the ID
-  const complianceItem: ComplianceItem = {
+  const [complianceItem, setComplianceItem] = useState<ComplianceItem>({
     id: "comp-001",
     title: "Annual Fire Safety Inspection",
     category: "safety",
@@ -53,7 +61,7 @@ const ComplianceDetail = () => {
       { name: "Fire Safety Checklist.pdf", url: "#", type: "PDF" },
       { name: "Previous Inspection Report.pdf", url: "#", type: "PDF" },
     ],
-  };
+  });
 
   const getStatusBadge = (status: ComplianceItem["status"]) => {
     switch (status) {
@@ -179,48 +187,58 @@ const ComplianceDetail = () => {
                   {complianceItem.description}
                 </p>
               </div>
-              {complianceItem.notes && (
+              {(complianceItem.notes || notes.length > 0) && (
                 <div>
                   <h3 className="font-semibold mb-2">Notes</h3>
-                  <p className="text-muted-foreground">
-                    {complianceItem.notes}
-                  </p>
+                  {complianceItem.notes && (
+                    <p className="text-muted-foreground mb-2">
+                      {complianceItem.notes}
+                    </p>
+                  )}
+                  {notes.map((note, index) => (
+                    <div key={index} className="p-3 border rounded-md mb-2">
+                      <p className="text-muted-foreground">{note}</p>
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {complianceItem.attachments &&
-            complianceItem.attachments.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Attachments</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {complianceItem.attachments.map((attachment, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 border rounded-md"
-                      >
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
-                          <div>
-                            <div className="font-medium">{attachment.name}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {attachment.type}
-                            </div>
+          {[...(complianceItem.attachments || []), ...uploadedFiles].length >
+            0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Attachments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {[
+                    ...(complianceItem.attachments || []),
+                    ...uploadedFiles,
+                  ].map((attachment, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-md"
+                    >
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                          <div className="font-medium">{attachment.name}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {attachment.type}
                           </div>
                         </div>
-                        <Button variant="ghost" size="sm" type="button">
-                          Download
-                        </Button>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                      <Button variant="ghost" size="sm" type="button">
+                        Download
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Right Column - Actions and Timeline */}
@@ -231,19 +249,45 @@ const ComplianceDetail = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               {complianceItem.status !== "completed" ? (
-                <Button className="w-full" type="button">
+                <Button
+                  className="w-full"
+                  type="button"
+                  onClick={() => {
+                    setComplianceItem({
+                      ...complianceItem,
+                      status: "completed",
+                    });
+                  }}
+                >
                   <CheckCircle className="mr-2 h-4 w-4" /> Mark as Completed
                 </Button>
               ) : (
-                <Button className="w-full" variant="outline" type="button">
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    setComplianceItem({ ...complianceItem, status: "pending" });
+                  }}
+                >
                   <Clock className="mr-2 h-4 w-4" /> Mark as Pending
                 </Button>
               )}
-              <Button className="w-full" variant="outline" type="button">
+              <Button
+                className="w-full"
+                variant="outline"
+                type="button"
+                onClick={() => setIsUploadDocOpen(true)}
+              >
                 <FileText className="mr-2 h-4 w-4" /> Upload Documentation
               </Button>
-              <Button className="w-full" variant="outline" type="button">
-                <User className="mr-2 h-4 w-4" /> Reassign
+              <Button
+                className="w-full"
+                variant="outline"
+                type="button"
+                onClick={() => setIsAddNoteOpen(true)}
+              >
+                <User className="mr-2 h-4 w-4" /> Add Note
               </Button>
             </CardContent>
           </Card>
@@ -293,6 +337,33 @@ const ComplianceDetail = () => {
           </Card>
         </div>
       </div>
+
+      {/* Add Note Dialog */}
+      <AddNoteDialog
+        isOpen={isAddNoteOpen}
+        onClose={() => setIsAddNoteOpen(false)}
+        onAddNote={(note) => setNotes([...notes, note])}
+        title="Add Compliance Note"
+        description="Add a note or comment to this compliance item."
+      />
+
+      {/* Upload Document Dialog */}
+      <UploadDocumentDialog
+        isOpen={isUploadDocOpen}
+        onClose={() => setIsUploadDocOpen(false)}
+        onUpload={(file) => {
+          setUploadedFiles([
+            ...uploadedFiles,
+            {
+              name: file.name,
+              url: "#",
+              type: file.type.split("/")[1].toUpperCase(),
+            },
+          ]);
+        }}
+        title="Upload Compliance Documentation"
+        description="Upload documentation related to this compliance item."
+      />
     </div>
   );
 };

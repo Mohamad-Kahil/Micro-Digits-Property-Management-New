@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,8 @@ import {
   FileType,
   HardDrive,
 } from "lucide-react";
+import AddNoteDialog from "./AddNoteDialog";
+import UploadDocumentDialog from "./UploadDocumentDialog";
 
 interface Document {
   id: string;
@@ -34,9 +36,19 @@ interface Document {
 const DocumentDetail = () => {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
+  const [isAddNoteOpen, setIsAddNoteOpen] = useState(false);
+  const [isShareDocOpen, setIsShareDocOpen] = useState(false);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [relatedDocs, setRelatedDocs] = useState<
+    { title: string; date: string }[]
+  >([
+    { title: "Property Purchase Agreement", date: "2022-01-10" },
+    { title: "Property Survey", date: "2022-01-12" },
+    { title: "Title Insurance Policy", date: "2022-01-15" },
+  ]);
 
   // Mock document data - in a real app, you would fetch this based on the ID
-  const document: Document = {
+  const [document, setDocument] = useState<Document>({
     id: "doc-001",
     title: "Sunset Apartments Property Deed",
     category: "deed",
@@ -50,7 +62,7 @@ const DocumentDetail = () => {
     content:
       "This is a placeholder for the document content. In a real application, this would be the actual content of the document or a preview of it.",
     tags: ["deed", "property", "legal", "ownership"],
-  };
+  });
 
   const getCategoryBadge = (category: string) => {
     switch (category) {
@@ -195,6 +207,23 @@ const DocumentDetail = () => {
               </div>
             </CardContent>
           </Card>
+
+          {notes.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Notes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {notes.map((note, index) => (
+                    <div key={index} className="p-3 border rounded-md">
+                      <p>{note}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Right Column - Actions and Related */}
@@ -210,8 +239,13 @@ const DocumentDetail = () => {
               <Button className="w-full" variant="outline" type="button">
                 <Printer className="mr-2 h-4 w-4" /> Print Document
               </Button>
-              <Button className="w-full" variant="outline" type="button">
-                <FileText className="mr-2 h-4 w-4" /> Share Document
+              <Button
+                className="w-full"
+                variant="outline"
+                type="button"
+                onClick={() => setIsAddNoteOpen(true)}
+              >
+                <FileText className="mr-2 h-4 w-4" /> Add Note
               </Button>
             </CardContent>
           </Card>
@@ -267,29 +301,56 @@ const DocumentDetail = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="p-3 border rounded-md hover:bg-muted/10 cursor-pointer">
-                  <div className="font-medium">Property Purchase Agreement</div>
-                  <div className="text-xs text-muted-foreground">
-                    Added: 2022-01-10
+                {relatedDocs.map((doc, index) => (
+                  <div
+                    key={index}
+                    className="p-3 border rounded-md hover:bg-muted/10 cursor-pointer"
+                  >
+                    <div className="font-medium">{doc.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Added: {doc.date}
+                    </div>
                   </div>
-                </div>
-                <div className="p-3 border rounded-md hover:bg-muted/10 cursor-pointer">
-                  <div className="font-medium">Property Survey</div>
-                  <div className="text-xs text-muted-foreground">
-                    Added: 2022-01-12
-                  </div>
-                </div>
-                <div className="p-3 border rounded-md hover:bg-muted/10 cursor-pointer">
-                  <div className="font-medium">Title Insurance Policy</div>
-                  <div className="text-xs text-muted-foreground">
-                    Added: 2022-01-15
-                  </div>
-                </div>
+                ))}
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  size="sm"
+                  onClick={() => setIsShareDocOpen(true)}
+                >
+                  <FileText className="mr-2 h-4 w-4" /> Link Another Document
+                </Button>
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Add Note Dialog */}
+      <AddNoteDialog
+        isOpen={isAddNoteOpen}
+        onClose={() => setIsAddNoteOpen(false)}
+        onAddNote={(note) => setNotes([...notes, note])}
+        title="Add Document Note"
+        description="Add a note or comment about this document."
+      />
+
+      {/* Link Document Dialog */}
+      <AddNoteDialog
+        isOpen={isShareDocOpen}
+        onClose={() => setIsShareDocOpen(false)}
+        onAddNote={(docTitle) => {
+          setRelatedDocs([
+            ...relatedDocs,
+            {
+              title: docTitle,
+              date: new Date().toISOString().split("T")[0],
+            },
+          ]);
+        }}
+        title="Link Related Document"
+        description="Enter the title of the related document."
+      />
     </div>
   );
 };

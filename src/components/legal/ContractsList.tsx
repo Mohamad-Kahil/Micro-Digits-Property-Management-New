@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import ContractDetailsDialog from "./ContractDetailsDialog";
+import RenewContractDialog from "./RenewContractDialog";
 
 interface Contract {
   id: string;
@@ -158,6 +159,10 @@ const ContractsList = ({
   const navigate = useNavigate();
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [selectedContract, setSelectedContract] = useState<Contract | null>(
+    null,
+  );
+  const [isRenewOpen, setIsRenewOpen] = useState(false);
+  const [renewingContract, setRenewingContract] = useState<Contract | null>(
     null,
   );
 
@@ -305,9 +310,10 @@ const ContractsList = ({
                       </DropdownMenuItem>
                       {contract.status === "expiring" && (
                         <DropdownMenuItem
-                          onClick={() =>
-                            console.log("Renew contract", contract.id)
-                          }
+                          onClick={() => {
+                            setRenewingContract(contract);
+                            setIsRenewOpen(true);
+                          }}
                         >
                           Renew Contract
                         </DropdownMenuItem>
@@ -345,6 +351,28 @@ const ContractsList = ({
           contract={selectedContract}
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
+        />
+      )}
+
+      {/* Renew Contract Dialog */}
+      {renewingContract && (
+        <RenewContractDialog
+          isOpen={isRenewOpen}
+          onClose={() => setIsRenewOpen(false)}
+          currentEndDate={renewingContract.endDate}
+          onRenew={(startDate, endDate) => {
+            // In a real app, you would update the contract in the database
+            console.log(
+              `Renewing contract ${renewingContract.id} from ${startDate} to ${endDate}`,
+            );
+            // For demo purposes, we'll update the local state
+            const updatedContracts = mockContracts.map((c) =>
+              c.id === renewingContract.id
+                ? { ...c, status: "active", startDate, endDate }
+                : c,
+            );
+            // This would typically be handled by refetching data from the server
+          }}
         />
       )}
     </div>
