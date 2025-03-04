@@ -17,6 +17,7 @@ import {
   HelpCircle,
   LogOut,
   ChevronRight,
+  Wrench,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -34,6 +35,7 @@ const Sidebar = ({
     { icon: Home, label: "Dashboard", href: "/" },
     { icon: Building2, label: "Properties", href: "/properties" },
     { icon: Users, label: "Tenants", href: "/tenants" },
+    { icon: Wrench, label: "Maintenance", href: "/maintenance" },
     { icon: BarChart3, label: "Reports", href: "/reports" },
     { icon: Settings, label: "Settings", href: "/settings" },
   ];
