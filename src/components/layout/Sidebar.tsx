@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,9 +90,9 @@ const Sidebar = ({
                         className="w-full justify-center py-6 text-gray-300 hover:text-white hover:bg-[#334155]"
                         asChild
                       >
-                        <a href={item.href}>
+                        <Link to={item.href}>
                           <item.icon className="h-5 w-5" />
-                        </a>
+                        </Link>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">{item.label}</TooltipContent>
@@ -103,10 +104,10 @@ const Sidebar = ({
                   className="w-full justify-start py-6 text-gray-300 hover:text-white hover:bg-[#334155]"
                   asChild
                 >
-                  <a href={item.href}>
+                  <Link to={item.href}>
                     <item.icon className="h-5 w-5 mr-3" />
                     {item.label}
-                  </a>
+                  </Link>
                 </Button>
               )}
             </li>
