@@ -49,7 +49,10 @@ const MaintenanceDashboard = () => {
             Overview of maintenance requests, schedules, and vendor information.
           </p>
         </div>
-        <Button onClick={() => navigate("/maintenance/requests/new")}>
+        <Button
+          onClick={() => navigate("/maintenance/requests/new")}
+          type="button"
+        >
           <Plus className="mr-2 h-4 w-4" /> New Request
         </Button>
       </div>
@@ -106,6 +109,7 @@ const MaintenanceDashboard = () => {
           variant="outline"
           className="h-20"
           onClick={() => navigate("/maintenance/requests")}
+          type="button"
         >
           <Wrench className="mr-2 h-5 w-5" />
           View All Maintenance Requests
@@ -114,6 +118,7 @@ const MaintenanceDashboard = () => {
           variant="outline"
           className="h-20"
           onClick={() => navigate("/maintenance/schedule")}
+          type="button"
         >
           <Calendar className="mr-2 h-5 w-5" />
           Maintenance Schedule
@@ -122,6 +127,7 @@ const MaintenanceDashboard = () => {
           variant="outline"
           className="h-20"
           onClick={() => navigate("/maintenance/vendors")}
+          type="button"
         >
           <Users className="mr-2 h-5 w-5" />
           Manage Vendors

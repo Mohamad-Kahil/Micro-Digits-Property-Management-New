@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -107,6 +107,8 @@ const MaintenanceVendorsList = ({
   searchQuery = "",
 }: MaintenanceVendorsListProps) => {
   const navigate = useNavigate();
+  const [isVendorDetailsOpen, setIsVendorDetailsOpen] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
 
   // Filter vendors based on search query
   const filteredVendors = mockVendors.filter((vendor) => {
@@ -124,109 +126,163 @@ const MaintenanceVendorsList = ({
     ? filteredVendors.slice(0, limit)
     : filteredVendors;
 
+  const handleEditVendor = (updatedVendor: Vendor) => {
+    console.log("Updating vendor:", updatedVendor);
+    // In a real app, you would update the vendor in your backend
+    setIsVendorDetailsOpen(false);
+  };
+
+  const handleDeleteVendor = (vendorId: string) => {
+    console.log("Deleting vendor:", vendorId);
+    // In a real app, you would delete the vendor from your backend
+    setIsVendorDetailsOpen(false);
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Maintenance Vendors</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Vendor</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Active Contracts</TableHead>
-              <TableHead>Last Used</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {displayedVendors.length > 0 ? (
-              displayedVendors.map((vendor) => (
-                <TableRow key={vendor.id}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 rounded-full bg-primary/10">
-                        <Building className="h-4 w-4 text-primary" />
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Maintenance Vendors</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Vendor</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead>Active Contracts</TableHead>
+                <TableHead>Last Used</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedVendors.length > 0 ? (
+                displayedVendors.map((vendor) => (
+                  <TableRow key={vendor.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 rounded-full bg-primary/10">
+                          <Building className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <div>{vendor.name}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div>{vendor.name}</div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{vendor.category}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <div className="text-sm">{vendor.contactName}</div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Mail className="h-3 w-3" />
+                          <span>{vendor.email}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Phone className="h-3 w-3" />
+                          <span>{vendor.phone}</span>
+                        </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{vendor.category}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <div className="text-sm">{vendor.contactName}</div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Mail className="h-3 w-3" />
-                        <span>{vendor.email}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                        <span className="ml-1">{vendor.rating.toFixed(1)}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Phone className="h-3 w-3" />
-                        <span>{vendor.phone}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                      <span className="ml-1">{vendor.rating.toFixed(1)}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{vendor.activeContracts}</TableCell>
-                  <TableCell>
-                    {vendor.lastUsed
-                      ? new Date(vendor.lastUsed).toLocaleDateString()
-                      : "Never"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Vendor</DropdownMenuItem>
-                        <DropdownMenuItem>Contact Vendor</DropdownMenuItem>
-                        <DropdownMenuItem>View Contracts</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    </TableCell>
+                    <TableCell>{vendor.activeContracts}</TableCell>
+                    <TableCell>
+                      {vendor.lastUsed
+                        ? new Date(vendor.lastUsed).toLocaleDateString()
+                        : "Never"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedVendor(vendor);
+                              setIsVendorDetailsOpen(true);
+                            }}
+                          >
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedVendor(vendor);
+                              setIsVendorDetailsOpen(true);
+                            }}
+                          >
+                            Edit Vendor
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              window.open(`mailto:${vendor.email}`, "_blank")
+                            }
+                          >
+                            Contact Vendor
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedVendor(vendor);
+                              setIsVendorDetailsOpen(true);
+                            }}
+                          >
+                            View Contracts
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} className="h-24 text-center">
+                    No vendors found.
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
-                  No vendors found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        {limit && displayedVendors.length > 0 && (
-          <div className="mt-4">
-            <Button
-              variant="link"
-              className="w-full"
-              onClick={() => navigate("/maintenance/vendors")}
-            >
-              View All Vendors
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+              )}
+            </TableBody>
+          </Table>
+          {limit && displayedVendors.length > 0 && (
+            <div className="mt-4">
+              <Button
+                variant="link"
+                className="w-full"
+                onClick={() => navigate("/maintenance/vendors")}
+              >
+                View All Vendors
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Vendor Details Dialog */}
+      {selectedVendor && (
+        <VendorDetailsDialog
+          vendor={selectedVendor}
+          isOpen={isVendorDetailsOpen}
+          onClose={() => setIsVendorDetailsOpen(false)}
+          onEdit={handleEditVendor}
+          onDelete={handleDeleteVendor}
+        />
+      )}
+    </>
   );
 };
+
+import VendorDetailsDialog from "./VendorDetailsDialog";
 
 export default MaintenanceVendorsList;

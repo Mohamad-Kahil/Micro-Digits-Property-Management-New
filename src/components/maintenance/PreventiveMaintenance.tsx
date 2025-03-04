@@ -160,6 +160,8 @@ const PreventiveMaintenance = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+  const [isTaskDetailsOpen, setIsTaskDetailsOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<PreventiveTask | null>(null);
   const [newTask, setNewTask] = useState({
     title: "",
     property: "",
@@ -174,6 +176,28 @@ const PreventiveMaintenance = () => {
     console.log("Adding task:", newTask);
     setIsAddTaskOpen(false);
     // In a real app, you would save the task to your backend
+  };
+
+  const handleMarkCompleted = (taskId: string) => {
+    console.log("Marking task as completed:", taskId);
+    // In a real app, you would update the task status in your backend
+  };
+
+  const handleReschedule = (taskId: string, newDate: string) => {
+    console.log("Rescheduling task:", taskId, "to", newDate);
+    // In a real app, you would update the task due date in your backend
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    console.log("Deleting task:", taskId);
+    // In a real app, you would delete the task from your backend
+    setIsTaskDetailsOpen(false);
+  };
+
+  const handleUpdateTask = (updatedTask: PreventiveTask) => {
+    console.log("Updating task:", updatedTask);
+    // In a real app, you would update the task in your backend
+    setIsTaskDetailsOpen(false);
   };
 
   const getStatusBadge = (status: PreventiveTask["status"]) => {
@@ -515,14 +539,26 @@ const PreventiveMaintenance = () => {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedTask(task);
+                              setIsTaskDetailsOpen(true);
+                            }}
+                          >
                             <FileText className="mr-2 h-4 w-4" /> View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleMarkCompleted(task.id)}
+                          >
                             <CheckCircle className="mr-2 h-4 w-4" /> Mark as
                             Completed
                           </DropdownMenuItem>
-                          <DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedTask(task);
+                              setIsTaskDetailsOpen(true);
+                            }}
+                          >
                             <Calendar className="mr-2 h-4 w-4" /> Reschedule
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -541,8 +577,23 @@ const PreventiveMaintenance = () => {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Task Details Dialog */}
+      {selectedTask && (
+        <TaskDetailsDialog
+          task={selectedTask}
+          isOpen={isTaskDetailsOpen}
+          onClose={() => setIsTaskDetailsOpen(false)}
+          onMarkCompleted={handleMarkCompleted}
+          onReschedule={handleReschedule}
+          onDelete={handleDeleteTask}
+          onUpdate={handleUpdateTask}
+        />
+      )}
     </div>
   );
 };
+
+import TaskDetailsDialog from "./TaskDetailsDialog";
 
 export default PreventiveMaintenance;

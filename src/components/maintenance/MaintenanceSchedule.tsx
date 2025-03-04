@@ -28,6 +28,8 @@ const MaintenanceSchedule = () => {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
+  const [isEventDetailsOpen, setIsEventDetailsOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEvent, setNewEvent] = useState({
     title: "",
     date: new Date().toISOString().split("T")[0],
@@ -79,6 +81,18 @@ const MaintenanceSchedule = () => {
     console.log("Adding event:", newEvent);
     setIsAddEventOpen(false);
     // In a real app, you would save the event to your backend
+  };
+
+  const handleUpdateEvent = (updatedEvent) => {
+    console.log("Updating event:", updatedEvent);
+    // In a real app, you would update the event in your backend
+    setIsEventDetailsOpen(false);
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    console.log("Deleting event:", eventId);
+    // In a real app, you would delete the event from your backend
+    setIsEventDetailsOpen(false);
   };
 
   const getDaysInMonth = (year, month) => {
@@ -317,7 +331,14 @@ const MaintenanceSchedule = () => {
                   <Badge variant="outline">
                     {new Date(event.date).toLocaleDateString()}
                   </Badge>
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedEvent(event);
+                      setIsEventDetailsOpen(true);
+                    }}
+                  >
                     View Details
                   </Button>
                 </div>
@@ -326,8 +347,21 @@ const MaintenanceSchedule = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Event Details Dialog */}
+      {selectedEvent && (
+        <MaintenanceEventDetails
+          event={selectedEvent}
+          isOpen={isEventDetailsOpen}
+          onClose={() => setIsEventDetailsOpen(false)}
+          onUpdate={handleUpdateEvent}
+          onDelete={handleDeleteEvent}
+        />
+      )}
     </div>
   );
 };
+
+import MaintenanceEventDetails from "./MaintenanceEventDetails";
 
 export default MaintenanceSchedule;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,7 @@ import {
   MoreVertical,
   Wrench,
 } from "lucide-react";
+import MaintenanceRequestDialog from "./MaintenanceRequestDialog";
 
 interface MaintenanceRequest {
   id: string;
@@ -35,6 +36,9 @@ interface MaintenanceRequest {
   priority: "low" | "medium" | "high" | "emergency";
   dateSubmitted: string;
   tenantName: string;
+  tenantEmail?: string;
+  tenantPhone?: string;
+  tenantAvatar?: string;
   assignedTo?: string;
   estimatedCompletion?: string;
 }
@@ -60,6 +64,10 @@ const mockRequests: MaintenanceRequest[] = [
     priority: "medium",
     dateSubmitted: "2023-06-15",
     tenantName: "Sarah Johnson",
+    tenantEmail: "sarah.johnson@example.com",
+    tenantPhone: "(555) 123-4567",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=sarah-johnson",
   },
   {
     id: "MR-1002",
@@ -73,6 +81,10 @@ const mockRequests: MaintenanceRequest[] = [
     tenantName: "Michael Chen",
     assignedTo: "John Smith",
     estimatedCompletion: "2023-06-18",
+    tenantEmail: "michael.chen@example.com",
+    tenantPhone: "(555) 987-6543",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=michael-chen",
   },
   {
     id: "MR-1003",
@@ -85,6 +97,10 @@ const mockRequests: MaintenanceRequest[] = [
     dateSubmitted: "2023-06-10",
     tenantName: "Emma Rodriguez",
     assignedTo: "Robert Johnson",
+    tenantEmail: "emma.rodriguez@example.com",
+    tenantPhone: "(555) 456-7890",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=emma-rodriguez",
   },
   {
     id: "MR-1004",
@@ -96,6 +112,10 @@ const mockRequests: MaintenanceRequest[] = [
     priority: "low",
     dateSubmitted: "2023-06-13",
     tenantName: "David Wilson",
+    tenantEmail: "david.wilson@example.com",
+    tenantPhone: "(555) 234-5678",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=david-wilson",
   },
   {
     id: "MR-1005",
@@ -109,6 +129,10 @@ const mockRequests: MaintenanceRequest[] = [
     tenantName: "Lisa Thompson",
     assignedTo: "Mike Davis",
     estimatedCompletion: "2023-06-19",
+    tenantEmail: "lisa.thompson@example.com",
+    tenantPhone: "(555) 345-6789",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=lisa-thompson",
   },
   {
     id: "MR-1006",
@@ -120,6 +144,10 @@ const mockRequests: MaintenanceRequest[] = [
     priority: "emergency",
     dateSubmitted: "2023-06-16",
     tenantName: "James Wilson",
+    tenantEmail: "james.wilson@example.com",
+    tenantPhone: "(555) 567-8901",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=james-wilson",
   },
   {
     id: "MR-1007",
@@ -133,6 +161,10 @@ const mockRequests: MaintenanceRequest[] = [
     tenantName: "Jennifer Lopez",
     assignedTo: "Pest Solutions Inc.",
     estimatedCompletion: "2023-06-17",
+    tenantEmail: "jennifer.lopez@example.com",
+    tenantPhone: "(555) 678-9012",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=jennifer-lopez",
   },
   {
     id: "MR-1008",
@@ -145,6 +177,10 @@ const mockRequests: MaintenanceRequest[] = [
     dateSubmitted: "2023-06-09",
     tenantName: "Thomas Brown",
     assignedTo: "Electric Experts LLC",
+    tenantEmail: "thomas.brown@example.com",
+    tenantPhone: "(555) 789-0123",
+    tenantAvatar:
+      "https://api.dicebear.com/7.x/avataaars/svg?seed=thomas-brown",
   },
 ];
 
@@ -158,13 +194,48 @@ const MaintenanceRequestsTable = ({
   onUpdateStatus,
 }: MaintenanceRequestsTableProps) => {
   const navigate = useNavigate();
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] =
+    useState<MaintenanceRequest | null>(null);
 
   const handleViewRequest = (id: string) => {
     if (onViewRequest) {
       onViewRequest(id);
     } else {
-      navigate(`/maintenance/requests/${id}`);
+      const request = mockRequests.find((req) => req.id === id);
+      if (request) {
+        setSelectedRequest(request);
+        setIsRequestDialogOpen(true);
+      }
     }
+  };
+
+  const handleUpdateRequest = (updatedRequest: MaintenanceRequest) => {
+    console.log("Updating request:", updatedRequest);
+    // In a real app, you would update the request in your backend
+    setIsRequestDialogOpen(false);
+  };
+
+  const handleDeleteRequest = (requestId: string) => {
+    console.log("Deleting request:", requestId);
+    // In a real app, you would delete the request from your backend
+    setIsRequestDialogOpen(false);
+  };
+
+  const handleAssignRequest = (
+    requestId: string,
+    staffId: string,
+    vendorId: string,
+  ) => {
+    console.log(
+      "Assigning request:",
+      requestId,
+      "to staff:",
+      staffId,
+      "and vendor:",
+      vendorId,
+    );
+    // In a real app, you would update the assignment in your backend
   };
 
   const getStatusIcon = (status: string) => {
@@ -335,7 +406,10 @@ const MaintenanceRequestsTable = ({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => handleViewRequest(request.id)}
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            setIsRequestDialogOpen(true);
+                          }}
                         >
                           View Details
                         </DropdownMenuItem>
@@ -358,9 +432,10 @@ const MaintenanceRequestsTable = ({
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem
-                          onClick={() =>
-                            navigate(`/maintenance/requests/${request.id}/edit`)
-                          }
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            setIsRequestDialogOpen(true);
+                          }}
                         >
                           Edit Request
                         </DropdownMenuItem>
@@ -389,6 +464,21 @@ const MaintenanceRequestsTable = ({
             View All Maintenance Requests
           </Button>
         </div>
+      )}
+
+      {/* Request Details Dialog */}
+      {selectedRequest && (
+        <MaintenanceRequestDialog
+          request={selectedRequest}
+          isOpen={isRequestDialogOpen}
+          onClose={() => setIsRequestDialogOpen(false)}
+          onUpdateStatus={
+            onUpdateStatus || ((id, status) => console.log(id, status))
+          }
+          onAssign={handleAssignRequest}
+          onDelete={handleDeleteRequest}
+          onUpdate={handleUpdateRequest}
+        />
       )}
     </div>
   );
