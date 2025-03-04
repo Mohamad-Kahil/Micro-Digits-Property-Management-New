@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ChevronLeft,
   DollarSign,
@@ -315,35 +314,304 @@ const TenantPayments = () => {
     .filter((p) => p.status === "paid" || p.status === "late")
     .reduce((sum, p) => sum + p.amount, 0);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
-  };
-
   return (
-    <motion.div 
-      className="space-y-6"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div 
-        className="flex flex-col sm:flex-
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-0 h-8 w-8"
+              onClick={() => navigate(`/tenants/${tenant.id}`)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Payment History
+            </h1>
+          </div>
+          <div className="flex items-center text-muted-foreground">
+            <DollarSign className="h-4 w-4 mr-1" />
+            Monthly Rent: ${tenant.rentAmount.toLocaleString()} •{" "}
+            <Calendar className="h-4 w-4 mx-1" /> Due on the 1st
+          </div>
+        </div>
+        <Dialog open={isAddPaymentOpen} onOpenChange={setIsAddPaymentOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Record Payment
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Record New Payment</DialogTitle>
+              <DialogDescription>
+                Add a new payment record for this tenant.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="amount" className="text-right">
+                  Amount ($)
+                </Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={newPayment.amount}
+                  onChange={(e) =>
+                    setNewPayment({
+                      ...newPayment,
+                      amount: parseFloat(e.target.value),
+                    })
+                  }
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Payment Date
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newPayment.date}
+                  onChange={(e) =>
+                    setNewPayment({ ...newPayment, date: e.target.value })
+                  }
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="method" className="text-right">
+                  Method
+                </Label>
+                <Select
+                  value={newPayment.method}
+                  onValueChange={(value) =>
+                    setNewPayment({ ...newPayment, method: value })
+                  }
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select payment method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                    <SelectItem value="credit_card">Credit Card</SelectItem>
+                    <SelectItem value="cash">Cash</SelectItem>
+                    <SelectItem value="check">Check</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="reference" className="text-right">
+                  Reference
+                </Label>
+                <Input
+                  id="reference"
+                  value={newPayment.reference}
+                  onChange={(e) =>
+                    setNewPayment({ ...newPayment, reference: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="Transaction ID, Check #, etc."
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="notes" className="text-right">
+                  Notes
+                </Label>
+                <Input
+                  id="notes"
+                  value={newPayment.notes}
+                  onChange={(e) =>
+                    setNewPayment({ ...newPayment, notes: e.target.value })
+                  }
+                  className="col-span-3"
+                  placeholder="e.g. Rent for July 2023"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={handleAddPayment}>
+                <DollarSign className="mr-2 h-4 w-4" /> Record Payment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Payment Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Paid</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ${totalPaid.toLocaleString()}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">
+              On-Time Payments
+            </CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {paidPayments}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Late Payments</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-amber-600">
+              {latePayments}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Pending</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">
+              {pendingPayments}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Search payments..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Select
+          value={statusFilter || ""}
+          onValueChange={(value) => setStatusFilter(value || null)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="paid">Paid</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
+            <SelectItem value="late">Late</SelectItem>
+            <SelectItem value="failed">Failed</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Payment History */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-8">
+            {filteredPayments.length > 0 ? (
+              filteredPayments.map((payment) => (
+                <div key={payment.id} className="flex items-start gap-4">
+                  <div
+                    className={`p-2 rounded-full ${
+                      payment.status === "paid"
+                        ? "bg-green-100"
+                        : payment.status === "pending"
+                          ? "bg-blue-100"
+                          : payment.status === "late"
+                            ? "bg-amber-100"
+                            : "bg-red-100"
+                    }`}
+                  >
+                    {getStatusIcon(payment.status)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="font-medium">
+                          ${payment.amount.toLocaleString()}
+                          {payment.notes && ` - ${payment.notes}`}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          {payment.method && (
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-1 text-xs font-normal"
+                            >
+                              <CreditCard className="h-3 w-3" />
+                              <span>
+                                {payment.method
+                                  .replace("_", " ")
+                                  .replace(/\b\w/g, (l) => l.toUpperCase())}
+                              </span>
+                            </Badge>
+                          )}
+                          {payment.reference && (
+                            <span className="text-xs text-muted-foreground">
+                              Ref: {payment.reference}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        {getStatusBadge(payment.status)}
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-muted-foreground">
+                            {payment.date
+                              ? `Paid: ${new Date(payment.date).toLocaleDateString()}`
+                              : `Due: ${new Date(payment.dueDate).toLocaleDateString()}`}
+                          </span>
+                          {payment.status !== "pending" && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                            >
+                              <Download className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <Separator className="my-4" />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <DollarSign className="mx-auto h-12 w-12 text-muted-foreground opacity-50" />
+                <h3 className="mt-4 text-lg font-medium">No payments found</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {searchQuery || statusFilter
+                    ? "Try adjusting your search or filter"
+                    : "No payment records found for this tenant"}
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default TenantPayments;

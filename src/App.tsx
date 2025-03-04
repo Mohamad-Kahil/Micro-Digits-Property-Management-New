@@ -1,21 +1,21 @@
-import { Suspense, lazy } from "react";
-import { useRoutes, Routes, Route } from "react-router-dom";
+import { Routes, Route, useRoutes } from "react-router-dom";
 import Home from "./components/home";
 import routes from "tempo-routes";
-
-const Properties = lazy(() => import("./components/properties"));
+import Properties from "./components/properties";
+import Tenants from "./components/tenants";
 
 function App() {
+  const tempoRoutes = import.meta.env.VITE_TEMPO === "true" ? routes : [];
+
   return (
-    <Suspense fallback={<p>Loading...</p>}>
-      <>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/properties/*" element={<Properties />} />
-        </Routes>
-        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      </>
-    </Suspense>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/properties/*" element={<Properties />} />
+        <Route path="/tenants/*" element={<Tenants />} />
+        {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
+      </Routes>
+    </>
   );
 }
 

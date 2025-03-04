@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ChevronLeft,
   MessageSquare,
@@ -239,40 +238,10 @@ const TenantCommunication = () => {
     return matchesSearch && matchesType;
   });
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-      },
-    },
-  };
-
   return (
-    <motion.div
-      className="space-y-6"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
+    <div className="space-y-6">
       {/* Header */}
-      <motion.div
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-        variants={itemVariants}
-      >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Button
@@ -362,13 +331,10 @@ const TenantCommunication = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </motion.div>
+      </div>
 
       {/* Search and Filter */}
-      <motion.div
-        className="flex flex-col sm:flex-row gap-4"
-        variants={itemVariants}
-      >
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -393,10 +359,10 @@ const TenantCommunication = () => {
             <SelectItem value="sms">SMS</SelectItem>
           </SelectContent>
         </Select>
-      </motion.div>
+      </div>
 
       {/* Communication List */}
-      <motion.div className="space-y-4" variants={containerVariants}>
+      <div className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Communication History</CardTitle>
@@ -405,11 +371,7 @@ const TenantCommunication = () => {
             <div className="space-y-8">
               {filteredCommunications.length > 0 ? (
                 filteredCommunications.map((comm, index) => (
-                  <motion.div
-                    key={comm.id}
-                    className="flex items-start gap-4"
-                    variants={itemVariants}
-                  >
+                  <div key={comm.id} className="flex items-start gap-4">
                     <div
                       className={`p-2 rounded-full ${
                         comm.direction === "incoming"
@@ -452,7 +414,7 @@ const TenantCommunication = () => {
                       </div>
                       <Separator className="my-4" />
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               ) : (
                 <div className="text-center py-8">
@@ -470,8 +432,8 @@ const TenantCommunication = () => {
             </div>
           </CardContent>
         </Card>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
