@@ -414,7 +414,9 @@ const ContractForm = ({ isEditing = false }: ContractFormProps) => {
               <CardContent>
                 <div className="space-y-4">
                   <div className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor="contract-file">Upload Contract</Label>
+                    <span className="block text-sm font-medium mb-1">
+                      Upload Contract
+                    </span>
                     <Input id="contract-file" type="file" />
                   </div>
                   <p className="text-sm text-muted-foreground">

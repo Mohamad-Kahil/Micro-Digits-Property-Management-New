@@ -25,6 +25,7 @@ import {
   MoreVertical,
   Calendar,
   Download,
+  Plus,
 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import ContractDetailsDialog from "./ContractDetailsDialog";
@@ -248,7 +249,7 @@ const ContractsList = ({
             onClick={() => navigate("/legal/contracts/new")}
             type="button"
           >
-            <Plus className="mr-2 h-4 w-4" /> New Contract
+            <FileText className="mr-2 h-4 w-4" /> New Contract
           </Button>
         )}
       </div>

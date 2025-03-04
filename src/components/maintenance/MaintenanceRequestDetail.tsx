@@ -14,6 +14,8 @@ import {
   Edit,
   Trash2,
   Plus,
+  Mail,
+  Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -152,7 +154,7 @@ const MaintenanceRequestDetail = () => {
       case "cancelled":
         return <AlertTriangle className="h-4 w-4 text-gray-500" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -292,7 +294,18 @@ const MaintenanceRequestDetail = () => {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="status">Status</Label>
-                  <Select value={newStatus} onValueChange={setNewStatus}>
+                  <Select
+                    value={newStatus}
+                    onValueChange={(value) =>
+                      setNewStatus(
+                        value as
+                          | "pending"
+                          | "in-progress"
+                          | "completed"
+                          | "cancelled",
+                      )
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>

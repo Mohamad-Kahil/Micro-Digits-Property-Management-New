@@ -44,11 +44,41 @@ interface PermissionsDialogProps {
 }
 
 const mockUsers: User[] = [
-  { id: "user-001", name: "John Smith", email: "john@example.com", role: "Admin", department: "Legal" },
-  { id: "user-002", name: "Maria Garcia", email: "maria@example.com", role: "Manager", department: "Finance" },
-  { id: "user-003", name: "Robert Johnson", email: "robert@example.com", role: "Staff", department: "Property Management" },
-  { id: "user-004", name: "Sarah Williams", email: "sarah@example.com", role: "Staff", department: "Legal" },
-  { id: "user-005", name: "David Brown", email: "david@example.com", role: "Manager", department: "Operations" },
+  {
+    id: "user-001",
+    name: "John Smith",
+    email: "john@example.com",
+    role: "Admin",
+    department: "Legal",
+  },
+  {
+    id: "user-002",
+    name: "Maria Garcia",
+    email: "maria@example.com",
+    role: "Manager",
+    department: "Finance",
+  },
+  {
+    id: "user-003",
+    name: "Robert Johnson",
+    email: "robert@example.com",
+    role: "Staff",
+    department: "Property Management",
+  },
+  {
+    id: "user-004",
+    name: "Sarah Williams",
+    email: "sarah@example.com",
+    role: "Staff",
+    department: "Legal",
+  },
+  {
+    id: "user-005",
+    name: "David Brown",
+    email: "david@example.com",
+    role: "Manager",
+    department: "Operations",
+  },
 ];
 
 const PermissionsDialog = ({
@@ -62,20 +92,23 @@ const PermissionsDialog = ({
     { userId: "user-002", accessLevel: "viewer" },
   ],
 }: PermissionsDialogProps) => {
-  const [permissions, setPermissions] = useState<Permission[]>(currentPermissions);
+  const [permissions, setPermissions] =
+    useState<Permission[]>(currentPermissions);
   const [selectedUser, setSelectedUser] = useState("");
-  const [selectedAccessLevel, setSelectedAccessLevel] = useState<Permission["accessLevel"]>("viewer");
+  const [selectedAccessLevel, setSelectedAccessLevel] =
+    useState<Permission["accessLevel"]>("viewer");
   const [searchQuery, setSearchQuery] = useState("");
 
   const availableUsers = mockUsers.filter(
-    (user) => !permissions.some((p) => p.userId === user.id)
+    (user) => !permissions.some((p) => p.userId === user.id),
   );
 
   const filteredUsers = availableUsers.filter(
     (user) =>
       user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.department && user.department.toLowerCase().includes(searchQuery.toLowerCase()))
+      (user.department &&
+        user.department.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleAddUser = () => {
@@ -93,11 +126,12 @@ const PermissionsDialog = ({
     setPermissions(permissions.filter((p) => p.userId !== userId));
   };
 
-  const handleChangeAccessLevel = (userId: string, accessLevel: Permission["accessLevel"]) => {
+  const handleChangeAccessLevel = (
+    userId: string,
+    accessLevel: Permission["accessLevel"],
+  ) => {
     setPermissions(
-      permissions.map((p) =>
-        p.userId === userId ? { ...p, accessLevel } : p
-      )
+      permissions.map((p) => (p.userId === userId ? { ...p, accessLevel } : p)),
     );
   };
 
@@ -131,7 +165,8 @@ const PermissionsDialog = ({
         <DialogHeader>
           <DialogTitle>Manage Permissions</DialogTitle>
           <DialogDescription>
-            Control who can access this {itemType}: <span className="font-medium">{itemTitle}</span>
+            Control who can access this {itemType}:{" "}
+            <span className="font-medium">{itemTitle}</span>
           </DialogDescription>
         </DialogHeader>
 
@@ -143,9 +178,12 @@ const PermissionsDialog = ({
               {permissions.map((permission) => {
                 const user = getUserById(permission.userId);
                 if (!user) return null;
-                
+
                 return (
-                  <div key={permission.userId} className="flex items-center justify-between p-3 border rounded-md">
+                  <div
+                    key={permission.userId}
+                    className="flex items-center justify-between p-3 border rounded-md"
+                  >
                     <div className="flex items-center gap-2">
                       <Users className="h-5 w-5 text-muted-foreground" />
                       <div>
@@ -158,8 +196,17 @@ const PermissionsDialog = ({
                     <div className="flex items-center gap-2">
                       <Select
                         value={permission.accessLevel}
-                        onValueChange={(value) => handleChangeAccessLevel(permission.userId, value as Permission["accessLevel"])}
-                        disabled={permission.accessLevel === "owner" && permissions.filter(p => p.accessLevel === "owner").length === 1}
+                        onValueChange={(value) =>
+                          handleChangeAccessLevel(
+                            permission.userId,
+                            value as Permission["accessLevel"],
+                          )
+                        }
+                        disabled={
+                          permission.accessLevel === "owner" &&
+                          permissions.filter((p) => p.accessLevel === "owner")
+                            .length === 1
+                        }
                       >
                         <SelectTrigger className="w-[110px]">
                           <SelectValue />
@@ -171,12 +218,16 @@ const PermissionsDialog = ({
                           <SelectItem value="restricted">Restricted</SelectItem>
                         </SelectContent>
                       </Select>
-                      
+
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => handleRemoveUser(permission.userId)}
-                        disabled={permission.accessLevel === "owner" && permissions.filter(p => p.accessLevel === "owner").length === 1}
+                        disabled={
+                          permission.accessLevel === "owner" &&
+                          permissions.filter((p) => p.accessLevel === "owner")
+                            .length === 1
+                        }
                         type="button"
                       >
                         <X className="h-4 w-4" />
@@ -185,7 +236,7 @@ const PermissionsDialog = ({
                   </div>
                 );
               })}
-              
+
               {permissions.length === 0 && (
                 <div className="text-center py-4 text-muted-foreground">
                   No users have been granted access yet.
@@ -214,7 +265,7 @@ const PermissionsDialog = ({
                 {filteredUsers.map((user) => (
                   <div
                     key={user.id}
-                    className={`p-2 hover:bg-muted/20 cursor-pointer ${selectedUser === user.id ? 'bg-muted/20' : ''}`}
+                    className={`p-2 hover:bg-muted/20 cursor-pointer ${selectedUser === user.id ? "bg-muted/20" : ""}`}
                     onClick={() => setSelectedUser(user.id)}
                   >
                     <div className="font-medium">{user.name}</div>
@@ -236,7 +287,9 @@ const PermissionsDialog = ({
               <div className="flex items-center gap-2">
                 <Select
                   value={selectedAccessLevel}
-                  onValueChange={(value) => setSelectedAccessLevel(value as Permission["accessLevel"])}
+                  onValueChange={(value) =>
+                    setSelectedAccessLevel(value as Permission["accessLevel"])
+                  }
                 >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue />
@@ -286,4 +339,12 @@ const PermissionsDialog = ({
             Cancel
           </Button>
           <Button onClick={handleSave} type="button">
-            <Shield className="mr-2 h
+            <Shield className="mr-2 h-4 w-4" /> Save Permissions
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default PermissionsDialog;

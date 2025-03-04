@@ -139,7 +139,13 @@ const Transactions = () => {
         <DatePickerWithRange
           className="w-[300px]"
           selected={dateRange}
-          onSelect={setDateRange}
+          onSelect={(range) =>
+            range &&
+            setDateRange({
+              from: range.from || new Date(),
+              to: range.to || new Date(),
+            })
+          }
         />
       </div>
 

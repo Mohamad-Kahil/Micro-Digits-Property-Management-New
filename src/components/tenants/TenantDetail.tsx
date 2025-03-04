@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
+  Plus,
+  Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -618,7 +620,7 @@ const TenantDetail = () => {
                               className="flex items-start gap-4"
                             >
                               <div className="bg-primary/10 p-2 rounded-full">
-                                <Trash2 className="h-4 w-4 text-primary" />
+                                <Wrench className="h-4 w-4 text-primary" />
                               </div>
                               <div>
                                 <p className="font-medium">

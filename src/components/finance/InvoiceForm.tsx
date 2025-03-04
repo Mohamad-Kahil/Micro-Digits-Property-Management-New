@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ChevronLeft, Save, Plus, Trash2, Calendar } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 
 const invoiceFormSchema = z.object({
@@ -114,7 +114,10 @@ const InvoiceForm = ({ isEditing = false }: InvoiceFormProps) => {
     defaultValues: initialData,
   });
 
-  const { fields, append, remove } = form.control._fields.items;
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "items",
+  });
 
   const onSubmit = (data: InvoiceFormValues) => {
     console.log(data);
