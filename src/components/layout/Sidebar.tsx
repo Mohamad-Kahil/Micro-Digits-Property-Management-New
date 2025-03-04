@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Wrench,
   DollarSign,
+  FileText,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -38,6 +39,7 @@ const Sidebar = ({
     { icon: Users, label: "Tenants", href: "/tenants" },
     { icon: Wrench, label: "Maintenance", href: "/maintenance" },
     { icon: DollarSign, label: "Finance", href: "/finance" },
+    { icon: FileText, label: "Legal", href: "/legal" },
     { icon: BarChart3, label: "Reports", href: "/reports" },
     { icon: Settings, label: "Settings", href: "/settings" },
   ];
