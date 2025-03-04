@@ -5,6 +5,7 @@ import Tenants from "./components/tenants";
 import Maintenance from "./components/maintenance";
 import Finance from "./components/finance";
 import Legal from "./components/legal";
+import Reports from "./components/reports";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/maintenance/*" element={<Maintenance />} />
         <Route path="/finance/*" element={<Finance />} />
         <Route path="/legal/*" element={<Legal />} />
+        <Route path="/reports/*" element={<Reports />} />
       </Routes>
     </>
   );
